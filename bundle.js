@@ -15,20 +15,15 @@ var flkty = new Flickity( elem, {
 });
 var $progressBar = $('.progress-bar');
 
-colors(flkty.selectedIndex);
+backgroundColorSelector(flkty.selectedIndex);
 progressBarMapper();
 
 flkty.on( 'select', function() {
-  console.log('Flickity selected slide: ' + flkty.selectedIndex );
-  var color = flkty.selectedIndex;
-  colors(color);
+  backgroundColorSelector(flkty.selectedIndex);
   progressBarMapper();
 });
-flkty.on( 'settle', function() {
-  console.log( 'Flickity settled at slide: ' + flkty.selectedIndex );
-});
 
-function colors(colorvalue) {
+function backgroundColorSelector(colorvalue) {
     var colors = [
         {
             dominantColor: false,
@@ -56,6 +51,7 @@ function colors(colorvalue) {
             $('body').css('background-color', 'white');
         }
     }
+
     this.backgroundColorSetter();
 }
 
