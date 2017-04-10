@@ -28,6 +28,12 @@ body {
         align-self: center;
         border-radius: 8px;
         box-shadow: 2px 2px 20px 0 rgba(0,0,0,0.3);
+
+        img {
+            width: 100%;
+            border-top-right-radius: 8px;
+            border-top-left-radius: 8px;
+        }
     }
 }
 
@@ -38,4 +44,9 @@ body {
   position: absolute;
   bottom: 0;
   transition: width 500ms;
+}
+
+#defaultCanvas0 {
+    position: absolute;
+    top: 0;
 }

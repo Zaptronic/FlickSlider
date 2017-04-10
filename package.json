@@ -12,7 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "flickity": "^2.0.5",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "p5": "^0.5.8"
   },
   "devDependencies": {
     "browserify": "^14.3.0",
