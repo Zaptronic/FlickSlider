@@ -3,7 +3,6 @@ var $ = require("jquery");
 var p5 = require('p5');
 // var sketch = require('./sketch');
 
-var $progressBar = $('.progress-bar');
 var elem = document.querySelector('.main-carousel');
 var flkty = new Flickity( elem, {
   // options
@@ -26,48 +25,60 @@ var colors = [
     },
     {
         dominantColor: true,
-        backgroundColor: [100,10,100]
+        backgroundColor: [200,100,50]
     },
     {
         dominantColor: false,
-        backgroundColor: [199,204,198]
-    },
-    {
-        dominantColor: false,
-        backgroundColor: [130,200,130]
+        backgroundColor: [30,0,130]
     }
 ];
-var dominantColorCollection = [];
-// var dominantColorIndex = [];
 
-//for every slide do check
-//check dom color if true
-//get index == dom index
-//check if img is available in index
-//create new p5 sketch
-// add argument index
-// var indexslide = new p5(sketch, index);
-var globalIndex = 0;
+var dominantColorCollection = [];
+var imagesCollection = [];
+var $progressBar = $('.progress-bar');
 
 var sketch = function(mySketch) {
-    mySketch.index = globalIndex;
     mySketch.collectColors = [];
+    var checkImage = $('.is-selected img').attr('src');
+    var checkWidth = $('.is-selected img').width();
     mySketch.img;
-    // var checkImage = $('.is-selected img').attr('src');
-    var checkimage = "img/L100107" + mySketch.index +".jpg";
-    //use combi from checkImage and checkimage2
-    //grab the first image in (carroussel_inner img)
-    //strip the static part from the src turn it into a variable
-    //add the checkimage 2 technique
+    mySketch.imgs = [];
 
     mySketch.setup = function() {
-        mySketch.noCanvas();
-        mySketch.img = mySketch.loadImage(checkimage, mySketch.imgAnalyzer);
+        mySketch.createCanvas(250, 250);
+
+        $('.carousel-cell__inner').each(function(){
+            var imgs = $(this).find('img').attr('src');
+            if(imgs) {
+                imagesCollection.push(imgs);
+            } else {
+                imagesCollection.push(false);
+            }
+        });
+
+        for(var i=0; i < colors.length; i++) {
+            // mySketch.img = mySketch.loadImage(imagesCollection[i], mySketch.imgAnalyzer);
+
+            // if (colors[i].dominantColor == true) {
+            //     mySketch.img = mySketch.loadImage(imagesCollection[i], mySketch.imgAnalyzer);
+            // } else {
+            //     dominantColorCollection.push(false);
+            //     console.log('false');
+            // }
+        }
+        console.log(imagesCollection);
+        // console.log(dominantColorCollection);
+        //for loop check op dominantcolor in color
+        //check if img exist if so grab img
+        //if true doe volgende regel
+        mySketch.img = mySketch.loadImage(checkImage, mySketch.imgAnalyzer);
+        // if false push empty value (or false) in color array
     };
     mySketch.imgAnalyzer = function() {
         var redC = 0;
         var greenC = 0;
         var blueC = 0;
+
         mySketch.img.loadPixels();
         for (var y = 0; y < mySketch.img.height; y+=100) {
             for (var x = 0; x < mySketch.img.height; x+=50) {
@@ -76,7 +87,6 @@ var sketch = function(mySketch) {
             }
         }
         mySketch.img.updatePixels();
-        // console.log(mySketch.collectColors);
 
         var count = mySketch.collectColors.length;
         for (var i = 0; i < mySketch.collectColors.length; i++) {
@@ -89,48 +99,37 @@ var sketch = function(mySketch) {
         var avB = mySketch.floor(blueC / count);
         var domColor = [avR, avG, avB];
         dominantColorPush(domColor);
+        getContrastYIQ(avR, avG, avB);
     }
 };
 
-$('.carousel-cell__inner img').each( function(index){
-    globalIndex++;
-    var myp5 = new p5(sketch);
-});
-
-// $('.carousel-cell__inner').each( function(index){
-//     if ( $(this).find('img').length ) {
-//         globalIndex++;
-//         var myp5 = new p5(sketch);
-//         // dominantColorIndex.push(index);
-//     } else {
-//         // dominantColorIndex.push(false);
-//     }
-// });
-
-
-
-// backgroundColorSelector(flkty.selectedIndex);
+var myp5 = new p5(sketch);
+backgroundColorSelector(flkty.selectedIndex);
 progressBarMapper();
+
 function backgroundColorSelector(colorvalue) {
+    dominantColorCalculator = function() {
+        if(colors[colorvalue].dominantColor) {
+            var checkImage = $('.is-selected img').attr('src');
+            console.log('checkthis: ' + checkImage);
+        } else {
+            return;
+        }
+
+        //select img from current slide
+        //loop trough pixels in image an calculate dominantColor
+        //return dominantColor
+    }
 
     backgroundColorSetter = function() {
-        var convertfactor = dominantColorCollection.length / colors.length;
-        console.log(convertfactor);
-        //might be faulty
-        var convertColor = Math.round(colorvalue * convertfactor);
-        console.log(convertColor);
-
-        var dominantSlide = String('rgb(' + dominantColorCollection[convertColor].dominantColorValues + ')');
         var colorSlide = String('rgb(' + colors[colorvalue].backgroundColor + ')');
-
-        if(colors[colorvalue].dominantColor) {
-            $('body').css('background-color', dominantSlide);
-        } else if (!colors[colorvalue].dominantColor) {
+        if(!colors[colorvalue].dominantColor) {
             $('body').css('background-color', colorSlide);
         } else {
             $('body').css('background-color', 'white');
         }
     }
+    this.dominantColorCalculator();
     this.backgroundColorSetter();
 }
 
@@ -140,9 +139,12 @@ function progressBarMapper() {
 }
 
 function dominantColorPush(domColor) {
-    var newDominantColor = {'dominantColorValues': domColor};
+    var newDominantColor = {'dominantColorRGB': domColor};
     dominantColorCollection.push(newDominantColor);
-    backgroundColorSelector(flkty.selectedIndex);
+
+    // colors.push({'dominantColorRGB': domColor});
+    console.log(dominantColorCollection);
+    // console.log(newDominantColor);
 }
 
 //contrast check to see if text has enough contrast
